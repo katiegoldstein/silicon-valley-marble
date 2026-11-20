@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Silicon Valley Marble</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Bree+Serif&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <!-- In-level HUD -->
+    <div id="hud" hidden>
+      <div id="gems" class="hud-num"><span class="gem-icon"></span><span id="gem-count">00/00</span></div>
+      <div id="timer" class="hud-num">00:00.00</div>
+      <div id="powerup" aria-label="Power-up slot"></div>
+      <div id="effects"></div>
+      <div id="speed" class="hud-num">0.0</div>
+      <div id="banner"></div>
+      <div id="tagline" class="hud-line"></div>
+
+      <div id="intro" class="card" hidden>
+        <div id="intro-name" class="card-title"></div>
+        <div id="intro-par" class="card-row"></div>
+        <div id="intro-best" class="card-row small"></div>
+        <div id="intro-tagline" class="card-row"></div>
+        <div class="card-hint">Click to start</div>
+        <div class="card-keys">WASD roll · Mouse look · Space jump · Click use power-up · R restart · Esc pause</div>
+      </div>
+
+      <div id="pause" class="card" hidden>
+        <div class="card-title">Paused</div>
+        <div class="card-hint">Click to resume</div>
+        <div class="card-buttons">
+          <button id="pause-restart" type="button" class="btn-blue">Restart</button>
+          <button id="pause-menu" type="button" class="btn-blue">Main menu</button>
+        </div>
+      </div>
+
+      <div id="end" class="card" hidden>
+        <div id="end-medal" class="medal" hidden></div>
+        <div id="end-title" class="card-title"></div>
+        <div id="end-sub" class="card-hint" hidden></div>
+        <div class="card-row"><span>Time</span><span id="end-time"></span></div>
+        <div class="card-row"><span>Par</span><span id="end-par"></span></div>
+        <div class="card-row"><span>Best</span><span id="end-best"></span></div>
+        <div id="end-new" class="card-flag" hidden>New best!</div>
+        <div class="card-buttons">
+          <button id="retry" type="button" class="btn-blue">Try again</button>
+          <button id="end-menu" type="button" class="btn-blue">Menu</button>
+          <button id="next" type="button" class="btn-red" hidden>Next level</button>
+        </div>
+      </div>
+
+      <!-- After Level 5: the pitch-deck "Thank you" slide, then credits. -->
+      <div id="deck" hidden>
+        <div class="deck-slide">
+          <div class="deck-logo">Squeezr × Acme Superintelligence × FAKEMO</div>
+          <div class="deck-thanks">Thank you!</div>
+          <div class="deck-q">Questions?</div>
+          <div class="deck-stats">
+            <div><span>Your time</span><b id="deck-time"></b></div>
+            <div><span>Par</span><b id="deck-par"></b></div>
+            <div><span>Total of best times</span><b id="deck-total"></b></div>
+            <div><span>Stealth Mode gems</span><b id="deck-hidden"></b></div>
+          </div>
+          <div class="deck-roll">
+            <div class="deck-roll-inner" id="deck-credits"></div>
+          </div>
+          <div class="card-buttons">
+            <button id="deck-retry" type="button" class="btn-blue">Try again</button>
+            <button id="deck-menu" type="button" class="btn-red">Main menu</button>
+          </div>
+          <div class="deck-foot">Slide 47 of 47 · Confidential · Pre-revenue</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menus -->
+    <div id="menu" hidden>
+      <section id="screen-title" class="screen">
+        <div class="logo">
+          <div class="logo-word">Marble</div>
+          <div class="logo-badge">Silicon Valley</div>
+        </div>
+        <nav class="menu-buttons">
+          <button type="button" class="btn-red big" data-go="play">Play</button>
+          <button type="button" class="btn-blue" data-go="levels">Level select</button>
+          <button type="button" class="btn-blue" data-go="options">Options</button>
+          <button type="button" class="btn-blue" data-go="credits">Credits</button>
+        </nav>
+        <div id="title-progress" class="menu-foot"></div>
+      </section>
+
+      <section id="screen-levels" class="screen" hidden>
+        <h1 class="screen-title">Level select</h1>
+        <div id="level-grid" class="level-grid"></div>
+        <div class="menu-foot" id="levels-foot"></div>
+        <button type="button" class="btn-blue back" data-go="title">Back</button>
+      </section>
+
+      <section id="screen-marbles" class="screen" hidden>
+        <h1 class="screen-title">Pick a marble</h1>
+        <div class="marble-panel">
+          <button type="button" class="btn-arrow" id="marble-prev" aria-label="Previous marble">◀</button>
+          <div class="marble-info">
+            <div id="marble-name" class="marble-name"></div>
+            <div id="marble-desc" class="marble-desc"></div>
+          </div>
+          <button type="button" class="btn-arrow" id="marble-next" aria-label="Next marble">▶</button>
+        </div>
+        <div class="card-buttons bottom">
+          <button type="button" class="btn-blue" data-go="back-from-marbles">Back</button>
+          <button type="button" class="btn-red big" id="roll">Roll!</button>
+        </div>
+        <div id="marble-level" class="menu-foot"></div>
+      </section>
+
+      <section id="screen-options" class="screen" hidden>
+        <h1 class="screen-title">Options</h1>
+        <div class="panel options">
+          <label>Music <input type="range" id="opt-music" min="0" max="1" step="0.05" /></label>
+          <label>Sound <input type="range" id="opt-sound" min="0" max="1" step="0.05" /></label>
+          <label>Mouse sensitivity <input type="range" id="opt-sens" min="0.0008" max="0.006" step="0.0001" /></label>
+          <label class="check">Invert Y <input type="checkbox" id="opt-invert" /></label>
+          <button type="button" class="btn-blue small" id="opt-reset">Reset progress</button>
+          <div id="opt-reset-confirm" class="confirm" hidden>
+            Erase best times, unlocks and hidden gems?
+            <button type="button" class="btn-red small" id="opt-reset-yes">Erase</button>
+            <button type="button" class="btn-blue small" id="opt-reset-no">Keep</button>
+          </div>
+        </div>
+        <button type="button" class="btn-blue back" data-go="title">Back</button>
+      </section>
+
+      <section id="screen-credits" class="screen" hidden>
+        <h1 class="screen-title">Credits</h1>
+        <div class="panel credits" id="credits-text"></div>
+        <button type="button" class="btn-blue back" data-go="title">Back</button>
+      </section>
+    </div>
+
+    <div id="loading">Loading…</div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

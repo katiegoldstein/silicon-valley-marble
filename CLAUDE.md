@@ -22,7 +22,7 @@ A five-level 3D marble platformer for desktop browsers.
 3. Levels 2–3: built, awaiting playtest.
 4. Levels 4–5: built, awaiting playtest, including Level 5's gravity-flip section.
 5. Menus and saves: built (title, level select, marble select, options, credits, medals, best times, unlocks).
-6. Audio and polish: synthesized SFX and per-level music built. Not done: playtest with 5+ players, par/ultra tuning, deploy.
+6. Audio and polish: synthesized SFX and per-level music built. Deployed (see Deploy). Not done: playtest with 5+ players, par/ultra tuning.
 
 All seven power-ups and all five hidden "Stealth Mode" gems are in. Open spec questions still unanswered: Level 4 difficulty options, Level 6.
 
@@ -38,3 +38,7 @@ All seven power-ups and all five hidden "Stealth Mode" gems are in. Open spec qu
 ## Run
 
 `npm run dev`, then open http://localhost:5173 (title screen), `?level=1`…`?level=5` to jump straight into a level (not gated by unlocks), or `?level=test` (gray test course). Scripted tests write real saves: clear `svmarble.save.v1` afterwards. T toggles the tuning panel. `window.__game` exposes the simulation in dev; Level 5 also exposes `level.track` and `level.debug` for autopilot checks.
+
+## Deploy
+
+Public repo https://github.com/katiegoldstein/silicon-valley-marble. Every push to `main` builds and publishes to GitHub Pages via `.github/workflows/deploy.yml`: https://katiegoldstein.github.io/silicon-valley-marble/. The build's base path is set in `vite.config.js`; `npx vite preview` serves the built copy at http://localhost:4173/silicon-valley-marble/.
